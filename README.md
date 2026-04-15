@@ -35,6 +35,23 @@ ________________________________________________________________________________
   Tools Used: Power BI, DAX, Agile Methodology. #DataAnalytics #PowerBI #HealthcareIT #ScrumMaster #ReportingAnalyst
 
 
+<p align="center">
+  <img src="2023 Greenwood Hospital Admissions Cover.png" width="800">
+</p>
+
+
+
+
+<p align="center">
+  <img src="2023 Greenwood Hospital Admissions Summary.png" width="800">
+</p>
+
+
+
+
+
+
+
 
 _______________________________________________________________________________________________________________________
 # Technical Process & Business Logic
