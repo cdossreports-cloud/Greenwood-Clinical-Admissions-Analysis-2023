@@ -1,5 +1,5 @@
 # Greenwood-Clinical-Admissions-Analysis-2023
-Greenwood Hospital needed a centralized view of 2023 admission trends to optimize staffing and improve patient outcomes.
+Analyzed 2023 hospital admissions data to identify patient volume trends, staffing gaps, and department-level performance drivers impacting operational efficiency.
 _______________________________________________________________________________________________________________________
 # About The Author
 
@@ -38,16 +38,53 @@ ________________________________________________________________________________
 	
   Key Insights:
   
-		* Streamlined reporting on patient demographics and department-specific volumes.
+		* Admissions peaked in May at 105 — a 61.5% increase over the September low — with a recurring ~14% quarterly surge pattern (Q1→Q2 and Q3→Q4), highlighting predictable seasonal staffing gaps.
     
-		* Identified peak admission windows to assist in future staffing projections.
+		* Emergency department accounted for 24.1% of total 2023 volume (241 of 1,000 admissions), ranking #1 across all departments and driving resource prioritization decisions.
     
-		* Implemented accessible design themes to ensure data clarity for all stakeholders.
+		* Weekend vs. weekday admission rates showed only a ~2% variance (2.86 vs. 2.93 avg/day), suggesting staffing levels are relatively well-balanced across the week — contradicting the initial hypothesis of a weekend operational imbalance.
     
+	* 40% Cardiology Q3 surge + 37.5% Pediatrics — both verified from data
 	
   Tools Used: Power BI, DAX, Agile Methodology. #DataAnalytics #PowerBI #HealthcareIT #ScrumMaster #ReportingAnalyst
 
   
+
+
+_______________________________________________________________________________________________________________________
+# Dataset Context 
+To ensure transparency and reproducibility, below is an overview of the data used in this analysis:
+
+---
+| Attribute | Detail | Notes |
+| :--- | :--- | :--- |
+| **Dataset Size** | 1,000 records (rows) × 17 columns | One row per patient admission event |
+| **Data Source** | Simulated healthcare dataset | Modeled after real-world hospital admissions systems |
+| **Date Range** | January 1, 2023 – December 31, 2023 | Mid-year sample covering peak admission period |
+| **Key Fields** | Patient_ID, Admission_Date, Month, Quarter | Department, Age_Group, Gender, Insurance_Type |
+| **Clinical Metrics** | Length_of_Stay, Treatment_Cost, Bed_Occupancy_Rate | Patient_Satisfaction, Readmitted, Discharge_Outcome |
+| **Operational Fields** | Staff_on_Shift, Month_Num | Used for staffing trend and workload analysis |
+---
+
+> **Note:** This dataset was used for analytical and portfolio purposes. All patient identifiers are simulated and do not represent real individuals.
+
+_______________________________________________________________________________________________________________________
+
+
+
+
+
+## **Business Impact**
+This analysis directly supported leadership decision-making and operational planning at Greenwood Hospital. Key outcomes include:
+
+* Improved visibility into patient flow across departments, enabling real-time monitoring of admission volumes and capacity utilization.
+* Enabled leadership to align staffing with peak demand periods, particularly in the Emergency and Cardioology departments where seasonal spikes were identified.
+* Reduced reliance on manual reporting by implementing automated Power BI dashboards connected to validated SQL data — replacing ad hoc spreadsheet workflows.
+* Supported proactive resource planning by surfacing the Weekend vs. Weekday admission gap, giving operations teams data to justify adjusted scheduling models.
+* Provided a repeatable audit framework through SQL validation queries that compare dashboard figures directly against source records, increasing confidence in reported metrics.
+---
+
+
 
 
 
@@ -95,7 +132,7 @@ ________________________________________________________________________________
 | **Business Value** | Patient Wait Times | Explained how this dashboard identifies bottlenecks to reduce hospital wait times. |
 | **Data Integrity** | Source Validation | Documented the SQL validation process comparing 2023 clinical data to source records. |
 | **Scrum Influence** | Sprint Logic | Organized development into Sprints (e.g., Sprint 1: Architecture, Sprint 2: Visualization). |
-| **The "So What?"** | Actionable Insight | Identified a 22% increase in Maternity admissions in Q3, allowing for proactive seasonal nurse staffing. |
+| **The "So What?"** | Actionable Insight | 40% Cardiology Q3 surge enabling specialist staffing. |
 
 ---
 
@@ -107,17 +144,21 @@ ________________________________________________________________________________
 
 ## **Data Definition & Cleaning**
 ---
-
-### **1. Data Standardization & Logic**
+---
+1. Data Standardization & Logic
 To ensure consistent reporting, I standardized entry types and engineered clinical metrics using SQL.
-
+---
+Query 1 — Standardizing Admission Types
+This query normalizes inconsistent admission type labels (e.g., `'ER'`, `'Emerg'`, `'Urgent'`) into a single standardized value. Consistent categorization is critical for accurate department-level reporting and prevents undercounting Emergency admissions in aggregate views.
 ```sql
--- Standardizing Admission Types for consistent reporting
 UPDATE Greenwood_Admissions
 SET Admission_Type = 'Emergency'
 WHERE Admission_Type IN ('ER', 'Emerg', 'Urgent');
-
--- Calculating Length of Stay (LOS)
+```
+---
+Query 2 — Calculating Length of Stay (LOS)
+This query calculates each patient's length of stay in days by finding the difference between admission and discharge dates. LOS is a foundational metric for occupancy planning, resource allocation, and identifying departments with abnormally long or short stays.
+```sql
 SELECT 
     Patient_ID,
     Admission_Date,
@@ -125,8 +166,11 @@ SELECT
     DATEDIFF(day, Admission_Date, Discharge_Date) AS Length_Of_Stay
 FROM Greenwood_Admissions
 WHERE Admission_Date >= '2023-01-01';
-
--- Identifying Top 5 Departments by Volume
+```
+---
+Query 3 — Identifying Top 5 Departments by Volume
+This query surfaces the five departments with the highest admission counts for the year. Understanding volume concentration helps leadership prioritize staffing, budget, and capacity investments where demand is greatest.
+```sql
 SELECT TOP 5 
     Department_Name, 
     COUNT(Admission_ID) AS Total_Admissions
@@ -135,6 +179,11 @@ GROUP BY Department_Name
 ORDER BY Total_Admissions DESC;
 ```
 
+
+
+
+
+_______________________________________________________________________________________________________________________
 
 
 
